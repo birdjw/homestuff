@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+  <h2>Storage Areas</h2>
+  
+  <form id="area-form">
+    <div class="form-group">
+      <label for="area-name">Storage Area Name</label>
+      <input type="text" id="area-name" placeholder="e.g., Fridge, Pantry, Garage" required />
+    </div>
+    <div class="form-group">
+      <label for="area-vendor">Default Vendor (Optional)</label>
+      <select id="area-vendor">
+        <option value="">None</option>
+      </select>
+    </div>
+    <button type="submit">Add Storage Area</button>
+  </form>
+  
+  <div id="areas"></div>
+</div>
+{% endblock %}

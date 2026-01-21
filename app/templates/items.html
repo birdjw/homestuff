@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+  <h2>Items</h2>
+  
+  <form id="item-form">
+    <div class="form-group">
+      <label for="item-name">Item Name</label>
+      <input type="text" id="item-name" placeholder="e.g., Milk, Eggs" required />
+    </div>
+    <div class="form-group">
+      <label for="item-storage-area">Storage Area</label>
+      <select id="item-storage-area" required>
+        <option value="">Select...</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="item-vendor">Vendor (Optional)</label>
+      <select id="item-vendor">
+        <option value="">None</option>
+      </select>
+    </div>
+    <div class="form-inline">
+      <div class="form-group">
+        <label for="item-tracking">Tracking Method</label>
+        <select id="item-tracking">
+          <option value="quantity">Quantity</option>
+          <option value="binary">Binary (low flag)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="item-is-low">Is Low</label>
+        <input type="checkbox" id="item-is-low" />
+      </div>
+    </div>
+    <div class="form-inline">
+      <div class="form-group">
+        <label for="item-minimum">Minimum Quantity</label>
+        <input type="number" id="item-minimum" value="1" min="0" required />
+      </div>
+      <div class="form-group">
+        <label for="item-on-hand">On Hand Quantity</label>
+        <input type="number" id="item-on-hand" value="0" min="0" required />
+      </div>
+    </div>
+    <button type="submit">Add Item</button>
+  </form>
+  
+  <div id="items-list"></div>
+</div>
+{% endblock %}

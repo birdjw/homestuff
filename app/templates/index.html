@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+  <h2>Welcome to {{ app_name }}</h2>
+  <p>Use the navigation links above to manage your home inventory:</p>
+  <ul>
+    <li><strong>Vendors:</strong> Add stores where you shop</li>
+    <li><strong>Storage Areas:</strong> Create locations like Fridge, Pantry, Garage</li>
+    <li><strong>Items:</strong> Track items with on-hand and minimum quantities</li>
+    <li><strong>Restock:</strong> View shopping list organized by vendor</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h3>Quick Restock Overview</h3>
+  <div id="home-restock">
+    <div id="shopping"></div>
+    <div id="auto"></div>
+  </div>
+</div>
+{% endblock %}

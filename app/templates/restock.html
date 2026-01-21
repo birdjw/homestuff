@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+  <h2>Restock List</h2>
+  
+  <h3>Add Manual Entry</h3>
+  <form id="manual-restock-form">
+    <div class="form-group">
+      <label for="manual-name">Item Name</label>
+      <input type="text" id="manual-name" placeholder="e.g., Paper towels" required />
+    </div>
+    <div class="form-group">
+      <label for="manual-vendor">Vendor (Optional)</label>
+      <select id="manual-vendor">
+        <option value="">None</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="manual-storage-area">Storage Area (Optional)</label>
+      <select id="manual-storage-area">
+        <option value="">None</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="manual-reason">Reason (Optional)</label>
+      <input type="text" id="manual-reason" placeholder="e.g., Running low" />
+    </div>
+    <button type="submit">Add to Restock List</button>
+  </form>
+  
+  <h3>Shopping List (by Vendor)</h3>
+  <div id="shopping"></div>
+  
+  <h3>Auto Restock (Below Minimum)</h3>
+  <div id="auto"></div>
+  
+  <h3>Manual Entries</h3>
+  <div id="manual"></div>
+</div>
+{% endblock %}

@@ -1,0 +1,573 @@
+/* ========================================
+   HomeStuff - Mobile-First Design
+   Friendly utility with subtle playfulness
+   ======================================== */
+
+/* === CSS Reset & Base === */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Neutral Base Colors */
+  --color-bg: #fafafa;
+  --color-surface: #ffffff;
+  --color-border: #e0e0e0;
+  --color-text: #2c3e50;
+  --color-text-secondary: #6b7280;
+  --color-text-muted: #9ca3af;
+  
+  /* Semantic Colors (meaning) */
+  --color-primary: #2563eb;
+  --color-primary-dark: #1d4ed8;
+  --color-primary-light: #dbeafe;
+  
+  --color-success: #059669;
+  --color-success-light: #d1fae5;
+  
+  --color-warning: #d97706;
+  --color-warning-light: #fef3c7;
+  
+  --color-danger: #dc2626;
+  --color-danger-light: #fee2e2;
+  
+  --color-info: #0891b2;
+  --color-info-light: #cffafe;
+  
+  /* Status Colors */
+  --color-low: var(--color-warning);
+  --color-low-bg: var(--color-warning-light);
+  --color-ok: var(--color-success);
+  --color-ok-bg: var(--color-success-light);
+  
+  /* Spacing Scale (large tap targets) */
+  --space-xs: 0.5rem;   /* 8px */
+  --space-sm: 0.75rem;  /* 12px */
+  --space-md: 1rem;     /* 16px */
+  --space-lg: 1.5rem;   /* 24px */
+  --space-xl: 2rem;     /* 32px */
+  --space-2xl: 3rem;    /* 48px */
+  
+  /* Typography (readable at arm's length) */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;    /* 18px */
+  --font-size-xl: 1.25rem;     /* 20px */
+  --font-size-2xl: 1.5rem;     /* 24px */
+  --font-size-3xl: 1.875rem;   /* 30px */
+  
+  /* Touch Target Minimum */
+  --tap-target: 44px;
+  
+  /* Border Radius (subtle playfulness) */
+  --radius-sm: 0.375rem;  /* 6px */
+  --radius-md: 0.5rem;    /* 8px */
+  --radius-lg: 0.75rem;   /* 12px */
+  --radius-xl: 1rem;      /* 16px */
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* === Base Styles === */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  color: var(--color-text);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding: var(--space-sm);
+  padding-bottom: var(--space-2xl);
+}
+
+/* === Header === */
+header {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--space-lg);
+  padding: var(--space-md);
+  position: sticky;
+  top: var(--space-sm);
+  z-index: 100;
+}
+
+header h1 {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* === Navigation === */
+nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+}
+
+nav a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: var(--space-sm);
+  min-height: var(--tap-target);
+  text-decoration: none;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+nav a:hover,
+nav a:active {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+nav a::before {
+  content: '';
+  font-size: var(--font-size-xl);
+}
+
+nav a[href="/"]::before { content: '🏠'; }
+nav a[href*="storage"]::before { content: '📦'; }
+nav a[href*="items"]::before { content: '📋'; }
+nav a[href*="vendors"]::before { content: '🏪'; }
+nav a[href*="restock"]::before { content: '🛒'; }
+
+/* === Status Bar === */
+#status {
+  display: block;
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--color-info-light);
+  color: var(--color-info);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+#status:empty::after {
+  content: 'Ready';
+  color: var(--color-text-muted);
+}
+
+/* === Cards === */
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.card h2 {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  margin-bottom: var(--space-lg);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.card h3 {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  margin-top: var(--space-lg);
+  margin-bottom: var(--space-md);
+  color: var(--color-text);
+}
+
+.card h4 {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin-bottom: var(--space-sm);
+  color: var(--color-text-secondary);
+}
+
+/* === Forms === */
+form {
+  margin-bottom: var(--space-xl);
+}
+
+.form-group {
+  margin-bottom: var(--space-md);
+}
+
+label {
+  display: block;
+  margin-bottom: var(--space-xs);
+  font-weight: 600;
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+}
+
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+select,
+textarea {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  min-height: var(--tap-target);
+  font-size: var(--font-size-lg);
+  font-family: inherit;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+}
+
+.form-inline {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+/* === Buttons === */
+button,
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  min-height: var(--tap-target);
+  padding: var(--space-sm) var(--space-lg);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  font-family: inherit;
+  color: white;
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+}
+
+button:hover,
+.btn:hover {
+  background: var(--color-primary-dark);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+button:active,
+.btn:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+button.secondary {
+  background: var(--color-text-secondary);
+}
+
+button.secondary:hover {
+  background: var(--color-text);
+}
+
+button.danger {
+  background: var(--color-danger);
+}
+
+button.danger:hover {
+  background: #b91c1c;
+}
+
+button.success {
+  background: var(--color-success);
+}
+
+button.success:hover {
+  background: #047857;
+}
+
+button.small {
+  min-height: 36px;
+  padding: var(--space-xs) var(--space-md);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+}
+
+button[type="submit"] {
+  width: 100%;
+  margin-top: var(--space-sm);
+}
+
+/* === Items & Lists === */
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-sm);
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.item:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.item.below {
+  background: var(--color-low-bg);
+  border-color: var(--color-low);
+}
+
+.item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-info strong {
+  display: block;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.25rem;
+}
+
+.item-info small {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  align-items: center;
+}
+
+.item-actions input[type="checkbox"] {
+  margin: 0;
+}
+
+/* === Vendor Groups === */
+.vendor-group {
+  margin-bottom: var(--space-xl);
+}
+
+.vendor-group h4 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-sm);
+  font-size: var(--font-size-xl);
+}
+
+.vendor-group h4::before {
+  content: '🏪';
+  font-size: var(--font-size-2xl);
+}
+
+/* Collapsible storage area header */
+.area-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.area-toggle {
+  background: transparent;
+  border: 2px solid transparent;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.area-toggle:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.area-toggle .chev {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.card.collapsed .chev {
+  transform: rotate(-90deg);
+}
+
+/* hide items when collapsed */
+.card.collapsed .item {
+  display: none;
+}
+
+/* Label next to low checkbox */
+.item-actions label.check-label {
+  margin-left: 8px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* === Empty States === */
+.empty-state {
+  padding: var(--space-2xl);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-lg);
+  font-style: italic;
+}
+
+.empty-state::before {
+  content: '📭';
+  display: block;
+  font-size: 4rem;
+  margin-bottom: var(--space-md);
+  opacity: 0.5;
+}
+
+/* === Logout Button === */
+form[action*="logout"] {
+  margin: 0;
+}
+
+form[action*="logout"] button {
+  min-height: 36px;
+  padding: var(--space-xs) var(--space-md);
+  font-size: var(--font-size-sm);
+  background: var(--color-text-secondary);
+}
+
+/* === Responsive Typography === */
+@media (min-width: 640px) {
+  body {
+    padding: var(--space-lg);
+  }
+  
+  header h1 {
+    font-size: var(--font-size-3xl);
+  }
+  
+  nav {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --font-size-base: 1.0625rem;  /* 17px */
+    --font-size-lg: 1.1875rem;    /* 19px */
+  }
+  
+  .form-inline {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .card {
+    padding: var(--space-xl);
+  }
+}
+
+@media (min-width: 1024px) {
+  body {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-xl);
+  }
+  
+  header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-lg);
+  }
+  
+  header h1 {
+    margin-bottom: 0;
+  }
+  
+  nav {
+    flex: 1;
+    margin-bottom: 0;
+  }
+  
+  form[action*="logout"] {
+    margin-left: auto;
+  }
+}
+
+/* === Utility Classes === */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mt-lg {
+  margin-top: var(--space-lg);
+}
+
+.mb-lg {
+  margin-bottom: var(--space-lg);
+}

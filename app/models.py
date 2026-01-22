@@ -87,8 +87,8 @@ class Item(TimestampMixin, db.Model):
     is_low = db.Column(db.Boolean, default=False, nullable=False)
     storage_area_id = db.Column(db.Integer, db.ForeignKey("storage_areas.id"), nullable=False)
     vendor_id = db.Column(db.Integer, db.ForeignKey("vendors.id"), nullable=True)
-    minimum_quantity = db.Column(db.Integer, default=0, nullable=False)
-    on_hand = db.Column(db.Integer, default=0, nullable=False)
+    minimum_quantity = db.Column(db.Integer, default=None, nullable=True)
+    on_hand = db.Column(db.Integer, default=None, nullable=True)
 
     user = db.relationship("User", back_populates="items")
     storage_area = db.relationship("StorageArea", back_populates="items")
@@ -102,7 +102,8 @@ class Item(TimestampMixin, db.Model):
         return self.on_hand < self.minimum_quantity
 
     def adjust_quantity(self, delta: int):
-        new_value = self.on_hand + delta
+        current = 0 if self.on_hand is None else int(self.on_hand)
+        new_value = current + int(delta)
         self.on_hand = max(new_value, 0)
 
     def __repr__(self):

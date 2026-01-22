@@ -295,75 +295,134 @@ async function loadItems() {
     if (data.length === 0) {
       container.innerHTML = '<div class="empty-state">No items yet. Add one above!</div>';
     } else {
+      // Group items by storage area
+      const groups = {};
       data.forEach(i => {
-        const d = document.createElement('div');
-        d.className = 'item' + (i.below_minimum ? ' below' : '');
-        
-        const info = document.createElement('div');
-        info.className = 'item-info';
-        info.innerHTML = `
-          <strong>${i.name}</strong><br>
-          <small>On hand: ${i.on_hand} | Min: ${i.minimum_quantity} | ${i.storage_area_name || 'No area'}${i.vendor_name ? ' | '+i.vendor_name : ''} | Tracking: ${i.tracking_method}${i.tracking_method === 'binary' ? (i.is_low ? ' (LOW)' : '') : ''}</small>
-        `;
-        d.appendChild(info);
-        
-        const actions = document.createElement('div');
-        actions.className = 'item-actions';
-        
-        const decrementBtn = document.createElement('button');
-        decrementBtn.textContent = '−';
-        decrementBtn.className = 'small';
-        decrementBtn.onclick = () => adjustItemQuantity(i.id, -1);
-        
-        const incrementBtn = document.createElement('button');
-        incrementBtn.textContent = '+';
-        incrementBtn.className = 'small';
-        incrementBtn.onclick = () => adjustItemQuantity(i.id, 1);
-        
-        const setBtn = document.createElement('button');
-        setBtn.textContent = 'Set';
-        setBtn.className = 'small secondary';
-        setBtn.onclick = () => setItemQuantity(i.id, i.on_hand);
-        
-        const deleteBtn = document.createElement('button');
-        deleteBtn.textContent = 'Delete';
-        deleteBtn.className = 'small danger';
-        deleteBtn.onclick = () => deleteItem(i.id);
-        
-        actions.appendChild(decrementBtn);
-        actions.appendChild(incrementBtn);
-        actions.appendChild(setBtn);
-        actions.appendChild(deleteBtn);
-        // If binary tracked, show low toggle
-        if (i.tracking_method === 'binary') {
-          const lowToggle = document.createElement('input');
-          lowToggle.type = 'checkbox';
-          lowToggle.checked = !!i.is_low;
-          lowToggle.title = 'Mark as low';
-          lowToggle.style.marginLeft = '8px';
-          lowToggle.onchange = async () => {
-            try {
-              const r = await fetch(`/items/${i.id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ is_low: lowToggle.checked })
-              });
-              if (r.ok) {
-                setStatus('Updated low flag');
-                loadItems();
-                handleRestock('');
-              } else {
-                setStatus('Failed to update low flag');
+        const area = i.storage_area_name || 'No area';
+        if (!groups[area]) groups[area] = [];
+        groups[area].push(i);
+      });
+
+      // Render each storage area as a section
+      Object.keys(groups).forEach(areaName => {
+        const areaWrap = document.createElement('div');
+        areaWrap.className = 'card';
+
+        // Header with collapse toggle
+        const header = document.createElement('div');
+        header.className = 'area-header';
+
+        const toggle = document.createElement('button');
+        toggle.className = 'area-toggle';
+        toggle.setAttribute('aria-expanded', 'true');
+        const chev = document.createElement('span');
+        chev.className = 'chev';
+        chev.textContent = '▾';
+        toggle.appendChild(chev);
+
+        const h = document.createElement('h3');
+        h.textContent = areaName;
+
+        header.appendChild(toggle);
+        header.appendChild(h);
+        areaWrap.appendChild(header);
+
+        // toggle behavior
+        toggle.addEventListener('click', () => {
+          const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+          toggle.setAttribute('aria-expanded', String(!isExpanded));
+          areaWrap.classList.toggle('collapsed');
+        });
+
+        groups[areaName].forEach(i => {
+          const d = document.createElement('div');
+          d.className = 'item' + (i.below_minimum ? ' below' : '');
+
+          const info = document.createElement('div');
+          info.className = 'item-info';
+          if (i.tracking_method === 'binary') {
+            // For binary-tracked items, don't show numeric fields; show vendor (if any) and friendly tracking label
+            info.innerHTML = `
+              <strong>${i.name}</strong>
+              <small>${i.vendor_name ? i.vendor_name + ' | ' : ''}Tracked - If Low</small>
+            `;
+          } else {
+            info.innerHTML = `
+              <strong>${i.name}</strong>
+              <small>On hand: ${i.on_hand ?? '—'} | Min: ${i.minimum_quantity ?? '—'}${i.vendor_name ? ' | ' + i.vendor_name : ''} | Tracking: ${i.tracking_method}</small>
+            `;
+          }
+          d.appendChild(info);
+
+          const actions = document.createElement('div');
+          actions.className = 'item-actions';
+
+          // Quantity controls only for quantity-tracked items
+          if (i.tracking_method !== 'binary') {
+            const decrementBtn = document.createElement('button');
+            decrementBtn.textContent = '−';
+            decrementBtn.className = 'small';
+            decrementBtn.onclick = () => adjustItemQuantity(i.id, -1);
+
+            const incrementBtn = document.createElement('button');
+            incrementBtn.textContent = '+';
+            incrementBtn.className = 'small';
+            incrementBtn.onclick = () => adjustItemQuantity(i.id, 1);
+
+            const setBtn = document.createElement('button');
+            setBtn.textContent = 'Set';
+            setBtn.className = 'small secondary';
+            setBtn.onclick = () => setItemQuantity(i.id, i.on_hand);
+
+            actions.appendChild(decrementBtn);
+            actions.appendChild(incrementBtn);
+            actions.appendChild(setBtn);
+          }
+
+          const deleteBtn = document.createElement('button');
+          deleteBtn.textContent = 'Delete';
+          deleteBtn.className = 'small danger';
+          deleteBtn.onclick = () => deleteItem(i.id);
+          actions.appendChild(deleteBtn);
+
+          // For binary tracked items show a low toggle only
+          if (i.tracking_method === 'binary') {
+            const lowToggle = document.createElement('input');
+            lowToggle.type = 'checkbox';
+            lowToggle.checked = !!i.is_low;
+            lowToggle.title = 'Mark as low';
+            lowToggle.id = `low-${i.id}`;
+            lowToggle.onchange = async () => {
+              try {
+                const r = await fetch(`/items/${i.id}`, {
+                  method: 'PATCH',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ is_low: lowToggle.checked })
+                });
+                if (r.ok) {
+                  setStatus('Updated low flag');
+                  loadItems();
+                  handleRestock('');
+                } else {
+                  setStatus('Failed to update low flag');
+                }
+              } catch (err) {
+                setStatus('Error: ' + err.message);
               }
-            } catch (err) {
-              setStatus('Error: ' + err.message);
-            }
-          };
-          actions.appendChild(lowToggle);
-        }
-        d.appendChild(actions);
-        
-        container.appendChild(d);
+            };
+            actions.appendChild(lowToggle);
+            const lowLabel = document.createElement('label');
+            lowLabel.htmlFor = lowToggle.id;
+            lowLabel.className = 'check-label';
+            lowLabel.textContent = 'Check if Low';
+            actions.appendChild(lowLabel);
+          }
+
+          d.appendChild(actions);
+          areaWrap.appendChild(d);
+        });
+
+        container.appendChild(areaWrap);
       });
     }
   }
@@ -495,10 +554,15 @@ function setupForms() {
       const name = document.getElementById('item-name').value.trim();
       const storage_area_id = parseInt(document.getElementById('item-storage-area').value, 10);
       const vendor_id = document.getElementById('item-vendor').value || null;
-      const minimum_quantity = parseInt(document.getElementById('item-minimum').value, 10);
-      const on_hand = parseInt(document.getElementById('item-on-hand').value, 10);
-      const tracking_method = document.getElementById('item-tracking') ? document.getElementById('item-tracking').value : 'quantity';
+      let minimum_quantity = parseInt(document.getElementById('item-minimum').value, 10);
+      let on_hand = parseInt(document.getElementById('item-on-hand').value, 10);
+      let tracking_method = document.getElementById('item-tracking') ? document.getElementById('item-tracking').value : 'quantity';
       const is_low = document.getElementById('item-is-low') ? document.getElementById('item-is-low').checked : false;
+      if (is_low) tracking_method = 'binary';
+      if (tracking_method === 'binary') {
+        minimum_quantity = null;
+        on_hand = null;
+      }
 
       if (!name || !storage_area_id) return;
 

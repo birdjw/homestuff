@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from flask_login import login_required, current_user
 
 from ..extensions import db
+from sqlalchemy.exc import SQLAlchemyError
 from ..models import Item, StorageArea, Vendor
 
 bp = Blueprint("items", __name__, url_prefix="/items")
@@ -55,18 +56,25 @@ def create_item():
     else:
         vendor = None
 
+    # determine low flag and enforce binary tracking if low is set
+    is_low = bool(payload.get("is_low", False))
+    tracking_method = "binary" if is_low else payload.get("tracking_method", "quantity")
     item = Item(
         name=name,
         storage_area=storage_area,
         vendor=vendor,
-        tracking_method=payload.get("tracking_method", "quantity"),
-        is_low=bool(payload.get("is_low", False)),
-        minimum_quantity=payload.get("minimum_quantity", 0),
-        on_hand=payload.get("on_hand", 0),
+        is_low=is_low,
+        tracking_method=tracking_method,
+        minimum_quantity=(None if tracking_method == 'binary' else max(int(payload.get("minimum_quantity", 0)), 0)),
+        on_hand=(None if tracking_method == 'binary' else max(int(payload.get("on_hand", 0)), 0)),
         user_id=current_user.id,
     )
     db.session.add(item)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 400
     return jsonify(_item_to_dict(item)), 201
 
 
@@ -86,9 +94,17 @@ def update_item(item_id):
     if "name" in payload:
         item.name = payload["name"]
     if "minimum_quantity" in payload:
-        item.minimum_quantity = max(int(payload.get("minimum_quantity", 0)), 0)
+        # ignore minimum for binary-tracked items
+        if item.tracking_method == 'binary':
+            item.minimum_quantity = None
+        else:
+            item.minimum_quantity = max(int(payload.get("minimum_quantity", 0)), 0)
     if "on_hand" in payload:
-        item.on_hand = max(int(payload.get("on_hand", 0)), 0)
+        # ignore on_hand for binary-tracked items
+        if item.tracking_method == 'binary':
+            item.on_hand = None
+        else:
+            item.on_hand = max(int(payload.get("on_hand", 0)), 0)
     if "storage_area_id" in payload:
         storage_area = StorageArea.query.filter_by(id=payload.get("storage_area_id"), user_id=current_user.id).first()
         if not storage_area:
@@ -98,10 +114,22 @@ def update_item(item_id):
         tm = payload.get("tracking_method")
         if tm in ("quantity", "binary"):
             item.tracking_method = tm
+            # when switching tracking mode, adjust numeric fields accordingly
+            if tm == 'binary':
+                item.minimum_quantity = None
+                item.on_hand = None
+            else:
+                # ensure numeric fields are present for quantity tracking
+                if item.minimum_quantity is None:
+                    item.minimum_quantity = 0
+                if item.on_hand is None:
+                    item.on_hand = 0
         else:
             return jsonify({"error": "invalid tracking_method"}), 400
     if "is_low" in payload:
         item.is_low = bool(payload.get("is_low"))
+        if item.is_low:
+            item.tracking_method = "binary"
     if "vendor_id" in payload:
         vendor_id = payload.get("vendor_id")
         if vendor_id:
@@ -112,7 +140,11 @@ def update_item(item_id):
         else:
             item.vendor = None
 
-    db.session.commit()
+    try:
+        db.session.commit()
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 400
     return jsonify(_item_to_dict(item))
 
 

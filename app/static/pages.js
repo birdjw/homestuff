@@ -34,7 +34,7 @@ async function handleRestock(containerPrefix = '') {
             d.className = 'item' + (e.below_minimum ? ' below' : '');
             const info = document.createElement('div');
             info.className = 'item-info';
-            info.textContent = e.name + (e.type === 'item' ? ` — ${e.on_hand} on hand (min ${e.minimum_quantity})` : ` — ${e.reason || ''}`);
+            info.textContent = e.name;
             d.appendChild(info);
             wrap.appendChild(d);
           });
@@ -54,7 +54,7 @@ async function handleRestock(containerPrefix = '') {
           d.className = 'item below';
           const info = document.createElement('div');
           info.className = 'item-info';
-          info.textContent = `${i.name} — ${i.on_hand} on hand (min ${i.minimum_quantity}) — ${i.storage_area}`;
+          info.textContent = i.name;
           d.appendChild(info);
           auto.appendChild(d);
         });

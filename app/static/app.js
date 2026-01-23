@@ -17,7 +17,7 @@ async function fetchRestock() {
     entries.forEach(e => {
       const d = document.createElement('div');
       d.className = 'item' + (e.below_minimum ? ' below' : '');
-      d.textContent = e.name + (e.type === 'item' ? ` — ${e.on_hand} on hand (min ${e.minimum_quantity})` : ` — ${e.reason || ''}`);
+      d.textContent = e.name;
       wrap.appendChild(d);
     });
     shopping.appendChild(wrap);
@@ -28,7 +28,7 @@ async function fetchRestock() {
   (data.auto || []).forEach(i => {
     const d = document.createElement('div');
     d.className = 'item below';
-    d.textContent = `${i.name} — ${i.on_hand} on hand (min ${i.minimum_quantity}) — ${i.storage_area}`;
+    d.textContent = i.name;
     auto.appendChild(d);
   });
 

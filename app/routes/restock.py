@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, render_template
 from flask_login import login_required, current_user
 
 from ..extensions import db
@@ -76,3 +76,14 @@ def delete_manual_entry(entry_id):
     db.session.delete(entry)
     db.session.commit()
     return jsonify({"status": "deleted", "id": entry_id})
+
+
+@bp.get("/shopping-list")
+@login_required
+def shopping_list():
+    """Render a mobile-friendly shopping list organized by vendor"""
+    from flask import current_app
+    payload = build_restock_snapshot(current_user.id)
+    return render_template("shopping_list.html", 
+                          shopping_by_vendor=payload.get("shopping_by_vendor", {}),
+                          app_name=current_app.config.get("APP_NAME", "HomeStuff"))

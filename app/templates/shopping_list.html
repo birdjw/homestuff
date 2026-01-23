@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Shopping List - {{ app_name }}</title>
+    <style>
+      /* Minimal inline styles for standalone page */
+      *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --color-bg: #fafafa;
+        --color-surface: #ffffff;
+        --color-border: #e0e0e0;
+        --color-text: #2c3e50;
+        --color-text-secondary: #6b7280;
+        --color-primary: #2563eb;
+        --color-success: #059669;
+        --space-sm: 0.75rem;
+        --space-md: 1rem;
+        --space-lg: 1.5rem;
+        --space-xl: 2rem;
+        --radius-md: 0.5rem;
+        --radius-lg: 0.75rem;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--color-text);
+        background: var(--color-bg);
+        padding: var(--space-sm);
+        padding-bottom: var(--space-xl);
+      }
+
+      .header {
+        background: var(--color-surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: var(--space-lg);
+        padding: var(--space-md);
+        position: sticky;
+        top: var(--space-sm);
+        z-index: 100;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+      }
+
+      .header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+      }
+
+      .header-actions {
+        display: flex;
+        gap: var(--space-sm);
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: var(--space-sm) var(--space-md);
+        border: none;
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-height: 44px;
+      }
+
+      .btn-primary {
+        background: var(--color-primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        opacity: 0.9;
+      }
+
+      .btn-secondary {
+        background: white;
+        color: var(--color-text);
+        border: 2px solid var(--color-border);
+      }
+
+      .btn-secondary:hover {
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+      }
+
+      .btn-success {
+        background: var(--color-success);
+        color: white;
+      }
+
+      .vendor-section {
+        background: var(--color-surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: var(--space-lg);
+        margin-bottom: var(--space-lg);
+      }
+
+      .vendor-header {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: var(--space-md);
+        padding-bottom: var(--space-sm);
+        border-bottom: 2px solid var(--color-border);
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+      }
+
+      .shopping-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        padding: var(--space-md);
+        border-bottom: 1px solid var(--color-border);
+        min-height: 60px;
+        transition: all 0.2s ease;
+      }
+
+      .shopping-item:last-child {
+        border-bottom: none;
+      }
+
+      .shopping-item.checked {
+        opacity: 0.5;
+        background: #f9fafb;
+      }
+
+      .shopping-item input[type="checkbox"] {
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .item-content {
+        flex: 1;
+        transition: all 0.2s ease;
+      }
+
+      .shopping-item.checked .item-content {
+        text-decoration: line-through;
+        color: var(--color-text-secondary);
+      }
+
+      .item-name {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+
+      .item-details {
+        font-size: 0.875rem;
+        color: var(--color-text-secondary);
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: var(--space-xl);
+        color: var(--color-text-secondary);
+        font-size: 1.125rem;
+      }
+
+      .empty-state::before {
+        content: '✅';
+        display: block;
+        font-size: 3rem;
+        margin-bottom: var(--space-md);
+      }
+
+      .stats {
+        background: var(--color-surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        padding: var(--space-md);
+        margin-bottom: var(--space-lg);
+        display: flex;
+        justify-content: space-around;
+        text-align: center;
+      }
+
+      .stat {
+        flex: 1;
+      }
+
+      .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--color-primary);
+      }
+
+      .stat-label {
+        font-size: 0.875rem;
+        color: var(--color-text-secondary);
+      }
+
+      @media print {
+        .header-actions,
+        .stats {
+          display: none;
+        }
+
+        body {
+          background: white;
+          padding: 0;
+        }
+
+        .vendor-section {
+          box-shadow: none;
+          border: 1px solid #ddd;
+          page-break-inside: avoid;
+        }
+
+        .shopping-item input[type="checkbox"] {
+          width: 16px;
+          height: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>🛒 Shopping List</h1>
+      <div class="header-actions">
+        <button class="btn btn-secondary" onclick="window.location.href='/restock-ui'">← Back</button>
+        <button class="btn btn-primary" onclick="window.print()">🖨️ Print</button>
+        <button class="btn btn-success" id="clear-all">Clear All</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-value" id="total-items">0</div>
+        <div class="stat-label">Total Items</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="checked-items">0</div>
+        <div class="stat-label">Checked</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="remaining-items">0</div>
+        <div class="stat-label">Remaining</div>
+      </div>
+    </div>
+
+    <div id="shopping-list-container">
+      {% if shopping_by_vendor %}
+        {% for vendor_name, items in shopping_by_vendor.items() %}
+          <div class="vendor-section">
+            <div class="vendor-header">
+              <span>🏪</span>
+              <span>{{ vendor_name }}</span>
+            </div>
+            {% for item in items %}
+              <div class="shopping-item" data-item-id="{{ item.id }}-{{ item.type }}">
+                <input type="checkbox" id="item-{{ item.id }}-{{ item.type }}" />
+                <label for="item-{{ item.id }}-{{ item.type }}" class="item-content">
+                  <div class="item-name">{{ item.name }}</div>
+                  {% if item.storage_area %}
+                    <div class="item-details">{{ item.storage_area }}</div>
+                  {% endif %}
+                  {% if item.type == 'item' and item.on_hand is not none and item.minimum_quantity is not none %}
+                    <div class="item-details">On hand: {{ item.on_hand }} | Min: {{ item.minimum_quantity }}</div>
+                  {% endif %}
+                  {% if item.reason %}
+                    <div class="item-details">{{ item.reason }}</div>
+                  {% endif %}
+                </label>
+              </div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state">
+          <p>No items to restock!</p>
+          <p style="font-size: 0.875rem; margin-top: 0.5rem;">Your shopping list is empty.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <script>
+      // Initialize stats and load saved state
+      const STORAGE_KEY = 'homestuff-shopping-list-state';
+      
+      function loadState() {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          return saved ? JSON.parse(saved) : {};
+        } catch (e) {
+          console.error('Error loading state:', e);
+          return {};
+        }
+      }
+
+      function saveState(state) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {
+          console.error('Error saving state:', e);
+        }
+      }
+
+      function updateStats() {
+        const total = document.querySelectorAll('.shopping-item').length;
+        const checked = document.querySelectorAll('.shopping-item.checked').length;
+        const remaining = total - checked;
+
+        document.getElementById('total-items').textContent = total;
+        document.getElementById('checked-items').textContent = checked;
+        document.getElementById('remaining-items').textContent = remaining;
+      }
+
+      function initializeCheckboxes() {
+        const state = loadState();
+        const checkboxes = document.querySelectorAll('.shopping-item input[type="checkbox"]');
+        
+        checkboxes.forEach(checkbox => {
+          const itemId = checkbox.closest('.shopping-item').dataset.itemId;
+          
+          // Restore saved state
+          if (state[itemId]) {
+            checkbox.checked = true;
+            checkbox.closest('.shopping-item').classList.add('checked');
+          }
+
+          // Add change handler
+          checkbox.addEventListener('change', function() {
+            const item = this.closest('.shopping-item');
+            const itemId = item.dataset.itemId;
+            
+            if (this.checked) {
+              item.classList.add('checked');
+              state[itemId] = true;
+            } else {
+              item.classList.remove('checked');
+              delete state[itemId];
+            }
+            
+            saveState(state);
+            updateStats();
+          });
+        });
+
+        updateStats();
+      }
+
+      // Clear all checkboxes
+      document.getElementById('clear-all').addEventListener('click', function() {
+        if (confirm('Clear all checked items?')) {
+          const checkboxes = document.querySelectorAll('.shopping-item input[type="checkbox"]');
+          checkboxes.forEach(checkbox => {
+            checkbox.checked = false;
+            checkbox.closest('.shopping-item').classList.remove('checked');
+          });
+          
+          localStorage.removeItem(STORAGE_KEY);
+          updateStats();
+        }
+      });
+
+      // Initialize on page load
+      window.addEventListener('load', initializeCheckboxes);
+    </script>
+  </body>
+</html>

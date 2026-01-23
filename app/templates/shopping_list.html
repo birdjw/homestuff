@@ -130,6 +130,37 @@
         display: flex;
         align-items: center;
         gap: var(--space-sm);
+        cursor: pointer;
+        user-select: none;
+        transition: opacity 0.2s ease;
+      }
+
+      .vendor-header:hover {
+        opacity: 0.8;
+      }
+
+      .vendor-header .collapse-icon {
+        margin-left: auto;
+        transition: transform 0.2s ease;
+      }
+
+      .vendor-section.collapsed .vendor-header .collapse-icon {
+        transform: rotate(-90deg);
+      }
+
+      .vendor-items {
+        overflow: hidden;
+        transition: max-height 0.3s ease, opacity 0.2s ease;
+      }
+
+      .vendor-section.collapsed .vendor-items {
+        max-height: 0 !important;
+        opacity: 0;
+      }
+
+      .vendor-section.collapsed .vendor-header {
+        margin-bottom: 0;
+        border-bottom: none;
       }
 
       .shopping-item {
@@ -271,11 +302,13 @@
     <div id="shopping-list-container">
       {% if shopping_by_vendor %}
         {% for vendor_name, items in shopping_by_vendor.items() %}
-          <div class="vendor-section">
-            <div class="vendor-header">
+          <div class="vendor-section" data-vendor="{{ vendor_name }}">
+            <div class="vendor-header" onclick="toggleVendor(this)">
               <span>🏪</span>
               <span>{{ vendor_name }}</span>
+              <span class="collapse-icon">▼</span>
             </div>
+            <div class="vendor-items">
             {% for item in items %}
               <div class="shopping-item" data-item-id="{{ item.id }}-{{ item.type }}">
                 <input type="checkbox" id="item-{{ item.id }}-{{ item.type }}" />
@@ -293,6 +326,7 @@
                 </label>
               </div>
             {% endfor %}
+            </div>
           </div>
         {% endfor %}
       {% else %}
@@ -306,6 +340,7 @@
     <script>
       // Initialize stats and load saved state
       const STORAGE_KEY = 'homestuff-shopping-list-state';
+      const COLLAPSE_KEY = 'homestuff-shopping-list-collapsed';
       
       function loadState() {
         try {
@@ -323,6 +358,50 @@
         } catch (e) {
           console.error('Error saving state:', e);
         }
+      }
+
+      function loadCollapseState() {
+        try {
+          const saved = localStorage.getItem(COLLAPSE_KEY);
+          return saved ? JSON.parse(saved) : {};
+        } catch (e) {
+          console.error('Error loading collapse state:', e);
+          return {};
+        }
+      }
+
+      function saveCollapseState(state) {
+        try {
+          localStorage.setItem(COLLAPSE_KEY, JSON.stringify(state));
+        } catch (e) {
+          console.error('Error saving collapse state:', e);
+        }
+      }
+
+      function toggleVendor(headerEl) {
+        const section = headerEl.closest('.vendor-section');
+        const vendorName = section.dataset.vendor;
+        const collapseState = loadCollapseState();
+        
+        section.classList.toggle('collapsed');
+        
+        if (section.classList.contains('collapsed')) {
+          collapseState[vendorName] = true;
+        } else {
+          delete collapseState[vendorName];
+        }
+        
+        saveCollapseState(collapseState);
+      }
+
+      function initializeCollapseState() {
+        const collapseState = loadCollapseState();
+        document.querySelectorAll('.vendor-section').forEach(section => {
+          const vendorName = section.dataset.vendor;
+          if (collapseState[vendorName]) {
+            section.classList.add('collapsed');
+          }
+        });
       }
 
       function updateStats() {
@@ -384,7 +463,10 @@
       });
 
       // Initialize on page load
-      window.addEventListener('load', initializeCheckboxes);
+      window.addEventListener('load', function() {
+        initializeCollapseState();
+        initializeCheckboxes();
+      });
     </script>
   </body>
 </html>

@@ -4,7 +4,7 @@
     {
       "label": "flask: run dev",
       "type": "shell",
-      "command": "source .venv/bin/activate && flask --app wsgi run --debugger --reload",
+      "command": "source .venv/bin/activate && flask --app wsgi run --host 0.0.0.0 --debugger --reload",
       "options": {
         "env": {
           "FLASK_APP": "wsgi.py",

@@ -98,17 +98,97 @@ header {
   z-index: 100;
 }
 
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
 header h1 {
   font-size: var(--font-size-2xl);
   font-weight: 700;
   color: var(--color-text);
-  margin-bottom: var(--space-sm);
+  margin-bottom: 0;
   display: flex;
   align-items: center;
   gap: var(--space-sm);
 }
 
+/* === Mobile Nav Toggle === */
+.nav-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tap-target);
+  height: var(--tap-target);
+  padding: 0;
+  background: var(--color-bg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-toggle:hover,
+.nav-toggle:focus {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+.hamburger {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--color-text);
+  position: relative;
+  transition: background 0.2s ease;
+}
+
+.hamburger::before,
+.hamburger::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 20px;
+  height: 2px;
+  background: var(--color-text);
+  transition: transform 0.2s ease;
+}
+
+.hamburger::before {
+  top: -6px;
+}
+
+.hamburger::after {
+  top: 6px;
+}
+
+/* Hamburger to X animation */
+.nav-toggle[aria-expanded="true"] .hamburger {
+  background: transparent;
+}
+
+.nav-toggle[aria-expanded="true"] .hamburger::before {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.nav-toggle[aria-expanded="true"] .hamburger::after {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
 /* === Navigation === */
+.nav-menu {
+  display: none;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.nav-menu.nav-open {
+  display: grid;
+}
+
 nav {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
@@ -152,23 +232,40 @@ nav a[href*="items"]::before { content: '📋'; }
 nav a[href*="vendors"]::before { content: '🏪'; }
 nav a[href*="restock"]::before { content: '🛒'; }
 
-/* === Status Bar === */
-#status {
-  display: block;
-  padding: var(--space-xs) var(--space-sm);
-  background: var(--color-info-light);
-  color: var(--color-info);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  min-height: 32px;
-  display: flex;
-  align-items: center;
+/* Logout button in nav */
+.nav-menu form[action*="logout"] {
+  margin: 0;
 }
 
-#status:empty::after {
-  content: 'Ready';
-  color: var(--color-text-muted);
+.nav-menu form[action*="logout"] button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  width: 100%;
+  padding: var(--space-sm);
+  min-height: var(--tap-target);
+  color: var(--color-danger);
+  background: var(--color-danger-light);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-menu form[action*="logout"] button:hover,
+.nav-menu form[action*="logout"] button:focus {
+  background: var(--color-danger);
+  color: white;
+  border-color: var(--color-danger);
+}
+
+.nav-menu form[action*="logout"] button::before {
+  content: '🚪';
+  font-size: var(--font-size-xl);
 }
 
 /* === Cards === */
@@ -533,17 +630,29 @@ form[action*="logout"] button {
     gap: var(--space-lg);
   }
   
+  .header-top {
+    margin-bottom: 0;
+  }
+  
   header h1 {
+    margin-bottom: 0;
+  }
+  
+  /* Hide hamburger on desktop */
+  .nav-toggle {
+    display: none;
+  }
+  
+  /* Always show nav on desktop */
+  .nav-menu {
+    display: grid;
+    flex: 1;
     margin-bottom: 0;
   }
   
   nav {
     flex: 1;
     margin-bottom: 0;
-  }
-  
-  form[action*="logout"] {
-    margin-left: auto;
   }
 }
 

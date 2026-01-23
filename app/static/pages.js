@@ -1,6 +1,6 @@
 // Utility functions
 function setStatus(msg) {
-  document.getElementById('status').textContent = msg;
+  // Status bar removed - no-op for backwards compatibility
 }
 
 // Restock handlers

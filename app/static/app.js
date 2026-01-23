@@ -1,11 +1,10 @@
 async function fetchRestock() {
   const resp = await fetch('/restock');
   if (!resp.ok) {
-    document.getElementById('status').textContent = 'Error fetching restock';
+    console.error('Error fetching restock');
     return;
   }
   const data = await resp.json();
-  document.getElementById('status').textContent = 'Loaded';
 
   const shopping = document.getElementById('shopping');
   shopping.innerHTML = '';

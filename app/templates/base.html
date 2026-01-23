@@ -9,19 +9,23 @@
   </head>
   <body>
     <header>
-      <h1>🏠 {{ app_name }}</h1>
+      <div class="header-top">
+        <h1>🏠 {{ app_name }}</h1>
+        <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu" aria-label="Toggle navigation">
+          <span class="hamburger"></span>
+        </button>
+      </div>
       {% block header_extras %}
-      <nav>
+      <nav id="navMenu" class="nav-menu">
         <a href="/">Home</a>
         <a href="/storage-areas-ui">Storage</a>
         <a href="/items-ui">Items</a>
         <a href="/vendors-ui">Vendors</a>
         <a href="/restock-ui">Restock</a>
+        <form method="POST" action="/auth/logout">
+          <button type="submit">Logout</button>
+        </form>
       </nav>
-      <form method="POST" action="/auth/logout">
-        <button type="submit">Logout</button>
-      </form>
-      <div id="status"></div>
       {% endblock %}
     </header>
 
@@ -30,5 +34,17 @@
     </main>
 
     <script src="/static/pages.js"></script>
+    <script>
+      // Mobile nav toggle
+      const navToggle = document.getElementById('navToggle');
+      const navMenu = document.getElementById('navMenu');
+      if (navToggle && navMenu) {
+        navToggle.addEventListener('click', () => {
+          const isExpanded = navToggle.getAttribute('aria-expanded') === 'true';
+          navToggle.setAttribute('aria-expanded', !isExpanded);
+          navMenu.classList.toggle('nav-open');
+        });
+      }
+    </script>
   </body>
 </html>

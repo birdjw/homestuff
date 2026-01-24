@@ -250,6 +250,97 @@
         color: var(--color-text-secondary);
       }
 
+      @media (max-width: 640px) {
+        body {
+          font-size: 12px;
+          padding: 0.25rem;
+          padding-bottom: 0.5rem;
+        }
+
+        .header {
+          padding: 0.25rem 0.375rem;
+          margin-bottom: 0.375rem;
+          border-radius: 0.25rem;
+        }
+
+        .header h1 {
+          font-size: 0.75rem;
+          width: 100%;
+        }
+
+        .header-actions {
+          width: 100%;
+          gap: 0.25rem;
+        }
+
+        .btn {
+          padding: 0.25rem 0.375rem;
+          font-size: 10px;
+          min-height: 28px;
+          gap: 0.125rem;
+          flex: 1;
+          justify-content: center;
+        }
+
+        .stats {
+          padding: 0.25rem 0.375rem;
+          margin-bottom: 0.375rem;
+          gap: 0.25rem;
+          border-radius: 0.25rem;
+        }
+
+        .stat-value {
+          font-size: 0.75rem;
+        }
+
+        .stat-label {
+          font-size: 0.563rem;
+        }
+
+        .vendor-section {
+          padding: 0.375rem;
+          margin-bottom: 0.375rem;
+          border-radius: 0.25rem;
+        }
+
+        .vendor-header {
+          font-size: 0.75rem;
+          margin-bottom: 0.25rem;
+          padding-bottom: 0.125rem;
+          gap: 0.25rem;
+        }
+
+        .shopping-item {
+          gap: 0.25rem;
+          padding: 0.375rem;
+          min-height: 36px;
+        }
+
+        .shopping-item input[type="checkbox"] {
+          width: 16px;
+          height: 16px;
+        }
+
+        .item-name {
+          font-size: 0.75rem;
+          margin-bottom: 0.0625rem;
+        }
+
+        .item-details {
+          font-size: 0.625rem;
+        }
+
+        .empty-state {
+          padding: 0.75rem 0.375rem;
+          font-size: 0.75rem;
+        }
+
+        .empty-state::before {
+          font-size: 1.5rem;
+          margin-bottom: 0.375rem;
+        }
+      }
+
       @media print {
         .header-actions,
         .stats {

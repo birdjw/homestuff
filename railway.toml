@@ -1,0 +1,4 @@
+[build]
+
+[deploy]
+startCommand = "flask db upgrade && python wsgi.py"

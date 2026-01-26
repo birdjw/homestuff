@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="card">
+<div class="card items-page">
   <h2>Items</h2>
   
   <div id="items-list"></div>
@@ -17,26 +17,25 @@
         <option value="">Select...</option>
       </select>
     </div>
-    <div class="form-group">
-      <label for="item-vendor">Vendor (Optional)</label>
-      <select id="item-vendor">
-        <option value="">None</option>
-      </select>
-    </div>
     <div class="form-inline">
       <div class="form-group">
-        <label for="item-tracking">Tracking Method</label>
-        <select id="item-tracking">
-          <option value="quantity">Quantity</option>
-          <option value="binary">Binary (low flag)</option>
+        <label for="item-vendor">Vendor (Optional)</label>
+        <select id="item-vendor">
+          <option value="">None</option>
         </select>
       </div>
-      <div class="form-group">
-        <label for="item-is-low">Is Low</label>
-        <input type="checkbox" id="item-is-low" />
-      </div>
     </div>
     <div class="form-inline">
+      <div class="form-group checkbox-group">
+        <input type="checkbox" id="item-track-quantity" checked />
+        <label for="item-track-quantity">Track by Quantity</label>
+      </div>
+      <div class="form-group checkbox-group">
+        <input type="checkbox" id="item-track-binary" />
+        <label for="item-track-binary">Track by If Low</label>
+      </div>
+    </div>
+    <div class="form-inline" id="quantity-fields">
       <div class="form-group">
         <label for="item-minimum">Minimum Quantity</label>
         <input type="number" id="item-minimum" value="1" min="0" />

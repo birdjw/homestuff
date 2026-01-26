@@ -291,6 +291,14 @@ async function loadItems() {
   const data = await resp.json();
   
   if (container) {
+    // Track which areas are currently expanded before re-rendering
+    const expandedAreas = new Set();
+    container.querySelectorAll('.card[data-area]').forEach(card => {
+      if (!card.classList.contains('collapsed')) {
+        expandedAreas.add(card.dataset.area);
+      }
+    });
+
     container.innerHTML = '';
     if (data.length === 0) {
       container.innerHTML = '<div class="empty-state">No items yet. Add one above!</div>';
@@ -306,7 +314,9 @@ async function loadItems() {
       // Render each storage area as a section
       Object.keys(groups).forEach(areaName => {
         const areaWrap = document.createElement('div');
-        areaWrap.className = 'card';
+        const isExpanded = expandedAreas.has(areaName);
+        areaWrap.className = isExpanded ? 'card' : 'card collapsed';
+        areaWrap.dataset.area = areaName;
 
         // Header with collapse toggle
         const header = document.createElement('div');
@@ -314,7 +324,7 @@ async function loadItems() {
 
         const toggle = document.createElement('button');
         toggle.className = 'area-toggle';
-        toggle.setAttribute('aria-expanded', 'true');
+        toggle.setAttribute('aria-expanded', String(isExpanded));
         const chev = document.createElement('span');
         chev.className = 'chev';
         chev.textContent = '▾';
@@ -344,12 +354,12 @@ async function loadItems() {
             // For binary-tracked items, don't show numeric fields; show vendor (if any) and friendly tracking label
             info.innerHTML = `
               <strong>${i.name}</strong>
-              <small>${i.vendor_name ? i.vendor_name + ' | ' : ''}Tracked - If Low</small>
+              <small>${i.vendor_name ? i.vendor_name + ' | ' : ''}Tracked By - If Low</small>
             `;
           } else {
             info.innerHTML = `
               <strong>${i.name}</strong>
-              <small>On hand: ${i.on_hand ?? '—'} | Min: ${i.minimum_quantity ?? '—'}${i.vendor_name ? ' | ' + i.vendor_name : ''} | Tracking: ${i.tracking_method}</small>
+              <small>On hand: ${i.on_hand ?? '—'} | Min: ${i.minimum_quantity ?? '—'}${i.vendor_name ? ' | ' + i.vendor_name : ''} | Tracked By - Quantity</small>
             `;
           }
           d.appendChild(info);
@@ -361,12 +371,12 @@ async function loadItems() {
           if (i.tracking_method !== 'binary') {
             const decrementBtn = document.createElement('button');
             decrementBtn.textContent = '−';
-            decrementBtn.className = 'small';
+            decrementBtn.className = 'small qty-btn';
             decrementBtn.onclick = () => adjustItemQuantity(i.id, -1);
 
             const incrementBtn = document.createElement('button');
             incrementBtn.textContent = '+';
-            incrementBtn.className = 'small';
+            incrementBtn.className = 'small qty-btn';
             incrementBtn.onclick = () => adjustItemQuantity(i.id, 1);
 
             const setBtn = document.createElement('button');
@@ -549,6 +559,33 @@ function setupForms() {
   
   const itemForm = document.getElementById('item-form');
   if (itemForm) {
+    // Handle mutually exclusive tracking checkboxes
+    const trackQtyCheckbox = document.getElementById('item-track-quantity');
+    const trackBinaryCheckbox = document.getElementById('item-track-binary');
+    const quantityFields = document.getElementById('quantity-fields');
+
+    if (trackQtyCheckbox && trackBinaryCheckbox) {
+      trackQtyCheckbox.addEventListener('change', () => {
+        if (trackQtyCheckbox.checked) {
+          trackBinaryCheckbox.checked = false;
+          if (quantityFields) quantityFields.style.display = '';
+        } else {
+          trackBinaryCheckbox.checked = true;
+          if (quantityFields) quantityFields.style.display = 'none';
+        }
+      });
+
+      trackBinaryCheckbox.addEventListener('change', () => {
+        if (trackBinaryCheckbox.checked) {
+          trackQtyCheckbox.checked = false;
+          if (quantityFields) quantityFields.style.display = 'none';
+        } else {
+          trackQtyCheckbox.checked = true;
+          if (quantityFields) quantityFields.style.display = '';
+        }
+      });
+    }
+
     itemForm.onsubmit = async (e) => {
       e.preventDefault();
       const name = document.getElementById('item-name').value.trim();
@@ -556,9 +593,9 @@ function setupForms() {
       const vendor_id = document.getElementById('item-vendor').value || null;
       let minimum_quantity = parseInt(document.getElementById('item-minimum').value, 10);
       let on_hand = parseInt(document.getElementById('item-on-hand').value, 10);
-      let tracking_method = document.getElementById('item-tracking') ? document.getElementById('item-tracking').value : 'quantity';
-      const is_low = document.getElementById('item-is-low') ? document.getElementById('item-is-low').checked : false;
-      if (is_low) tracking_method = 'binary';
+      const trackBinary = document.getElementById('item-track-binary');
+      let tracking_method = (trackBinary && trackBinary.checked) ? 'binary' : 'quantity';
+      const is_low = (trackBinary && trackBinary.checked);
       if (tracking_method === 'binary') {
         minimum_quantity = null;
         on_hand = null;

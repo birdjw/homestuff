@@ -355,6 +355,23 @@ input[type="checkbox"] {
   accent-color: var(--color-primary);
 }
 
+.form-group.checkbox-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.form-group.checkbox-group label {
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+.form-group.checkbox-group input[type="checkbox"] {
+  width: 24px;
+  flex-shrink: 0;
+}
+
 .form-inline {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -427,9 +444,52 @@ button.small {
   font-weight: 500;
 }
 
+button.qty-btn {
+  min-width: 44px;
+  min-height: 44px;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  padding: var(--space-sm);
+}
+
 button[type="submit"] {
   width: 100%;
   margin-top: var(--space-sm);
+}
+
+/* === Items Page Scale === */
+.items-page {
+  font-size: 0.67em;
+}
+
+.items-page h2 {
+  font-size: 1.5em;
+}
+
+.items-page .form-group label,
+.items-page .form-group input,
+.items-page .form-group select,
+.items-page button {
+  font-size: 1em;
+}
+
+.items-page .item {
+  padding: calc(var(--space-md) * 0.67);
+  gap: calc(var(--space-md) * 0.67);
+}
+
+.items-page .item-info strong {
+  font-size: 1.1em;
+}
+
+.items-page .item-info small {
+  font-size: 0.9em;
+}
+
+.items-page .item-actions button {
+  padding: calc(var(--space-xs) * 0.67) calc(var(--space-sm) * 0.67);
+  font-size: 0.9em;
+  min-height: calc(var(--tap-target) * 0.67);
 }
 
 /* === Items & Lists === */
@@ -516,8 +576,8 @@ button[type="submit"] {
 }
 
 .area-toggle {
-  background: transparent;
-  border: 2px solid transparent;
+  background: var(--color-border);
+  border: 2px solid var(--color-border);
   width: 40px;
   height: 40px;
   border-radius: 8px;
@@ -526,6 +586,12 @@ button[type="submit"] {
   justify-content: center;
   font-size: 1.25rem;
   cursor: pointer;
+  color: var(--color-text);
+}
+
+.area-toggle:hover {
+  background: var(--color-text-muted);
+  border-color: var(--color-text-muted);
 }
 
 .area-toggle:focus {

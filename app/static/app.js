@@ -23,15 +23,6 @@ async function fetchRestock() {
     shopping.appendChild(wrap);
   }
 
-  const auto = document.getElementById('auto');
-  auto.innerHTML = '';
-  (data.auto || []).forEach(i => {
-    const d = document.createElement('div');
-    d.className = 'item below';
-    d.textContent = i.name;
-    auto.appendChild(d);
-  });
-
   const manual = document.getElementById('manual');
   manual.innerHTML = '';
   (data.manual || []).forEach(e => {

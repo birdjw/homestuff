@@ -302,6 +302,16 @@ nav a[href*="restock"]::before { content: '🛒'; }
   color: var(--color-text-secondary);
 }
 
+.card ul {
+  margin-left: var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+
+.card li {
+  margin-bottom: var(--space-xs);
+  line-height: 1.6;
+}
+
 /* === Forms === */
 form {
   margin-bottom: var(--space-xl);

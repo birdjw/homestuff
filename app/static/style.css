@@ -117,6 +117,18 @@ header h1 {
   gap: var(--space-sm);
 }
 
+header h1 a {
+  line-height: 0;
+  display: block;
+}
+
+header h1 .logo {
+  height: 120px;
+  width: auto;
+  display: block;
+  cursor: pointer;
+}
+
 /* === Mobile Nav Toggle === */
 .nav-toggle {
   display: flex;
@@ -768,9 +780,33 @@ form[action*="logout"] button {
   header h1 {
     font-size: var(--font-size-3xl);
   }
+
+  header h1 .logo {
+    height: 200px;
+  }
   
   nav {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Login page specific styles */
+body:not(:has(.nav-menu)) .nav-toggle {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  body:has(.card) header {
+    padding: var(--space-xs) var(--space-md);
+    margin-left: calc(-1 * var(--space-lg));
+    margin-right: calc(-1 * var(--space-lg));
+    margin-bottom: var(--space-md);
+    width: calc(100% + 2 * var(--space-lg));
+    border-radius: 0;
+  }
+  
+  body:has(.card) header h1 .logo {
+    height: 200px;
   }
 }
 
